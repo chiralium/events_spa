@@ -11,15 +11,16 @@
         name: "Register",
         data() {
           return {
-            msg: "<no-data>"
+            msg: "***"
           }
         },
         methods: {
+          /* getting the main message */
           getMessage() {
             const path = "http://127.0.0.1:8000/api/register";
             axios.get(path).then((res) => {
-              console.log(res.data);
-              this.msg = res.data;
+              if (res.data.error) this.msg = "Something gonna wrong";
+              else this.msg = res.data.message;
             })
           }
         },
