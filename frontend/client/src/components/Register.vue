@@ -5,18 +5,28 @@
         <h5 class="card-title">Регистрация</h5>
         <h6 class="card-subtitle mb-2 text-muted">Введите e-mail и пароль для регистрации</h6>
         <p class="card-text">
-          <form>
             <div class="form-group">
               <label for="exampleInputEmail1">Email</label>
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="example@mail.com">
+              <input v-model="email_address"
+                     v-bind:class="{'form-control border border-success' : email_is_valid,
+                                    'form-control border border-danger'  : !email_is_valid}"
+
+                     type="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="example@mail.com">
             </div>
             <div class="form-group">
-              <label for="exampleInputPassword1">Пароль</label>
-              <input type="password" class="form-control" id="exampleInputPassword1">
+              <label for="password_field">Пароль</label>
+              <input v-model="original_password" type="password" class="form-control" id="password_field">
             </div>
-            <button type="submit" class="btn btn-primary">Регистрация</button>
-          </form>
+
+            <div class="form-group">
+              <label for="confirm_password">Подтвердите пароль</label>
+              <input v-model="confirmed_password" type="password" id="confirm_password"
+                     v-bind:class="{'form-control border border-success' : is_compared,
+                                    'form-control border border-danger' : !is_compared}">
+            </div>
+            <button v-on:click="" type="submit" class="btn btn-primary">Регистрация</button>
         </p>
+        <h6 class="card-subtitle mb-3 text-muted">Уже есть аккаунт?</h6>
       </div>
     </div>
     </div>
@@ -29,7 +39,10 @@
         name: "Register",
         data() {
           return {
-            msg: "***"
+            msg: "***",
+            original_password: '',
+            confirmed_password: '',
+            email_address: ''
           }
         },
         methods: {
@@ -40,6 +53,17 @@
               if (res.data.error) this.msg = "Something gonna wrong";
               else this.msg = res.data.message;
             })
+          }
+        },
+        computed: {
+          is_compared: function() {
+            if (this.original_password === '') return false;
+            else return this.original_password === this.confirmed_password;
+          },
+
+          email_is_valid: function() {
+            var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(this.email_address);
           }
         },
         created() {

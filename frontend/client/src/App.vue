@@ -12,6 +12,6 @@ export default {
 
 <style>
 #app {
-  margin-top: 60px;
+  margin-top: 10%;
 }
 </style>
