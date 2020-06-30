@@ -11,6 +11,7 @@ def registration_handler(request):
     """Registration requests handler"""
     if request.method == 'GET': return Response({"message" : "Undefined request method"});
     elif request.method == 'POST':
-        return Response({
-            "post_data" : str(dir(request))
-        })
+        if User.objects.filter(email=request.data.get('email')).exists():
+            return Response({"is_user_exists" : 1})
+        else:
+            return Response({"is_user_exists" : 0})

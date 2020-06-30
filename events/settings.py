@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'events_manager',
         'USER': 'postgres',
-        'PASSWORD': '',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': ''
     }
