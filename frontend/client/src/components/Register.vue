@@ -93,14 +93,33 @@
             })
           },
 
+          /* check the form fields */
           form_submit() {
-            if ( (this.form_is_valid = this.is_compared && this.email_is_valid) ) console.log(this.form_is_not_valid);
-            else console.log(this.form_is_valid);
+            if ( (this.form_is_valid = this.is_compared && this.email_is_valid) ) this.registration();
           },
 
+          /* change the form */
           change_form() {
             this.is_register = !this.is_register;
+          },
+
+          /* send post-request to endpoint */
+          registration() {
+            const endpoint = "http://127.0.0.1:8000/api/register";
+            axios({
+              method: 'post',
+              url: endpoint,
+              headers: {'Content-Type': 'multipart/form-data' },
+              data: {
+                email: this.register_email,
+                password: this.register_password
+              }
+            }).then((response) => {
+              if (response.data.user_exists) this.message = "Пользователь уже существует!";
+              else this.message = "Регистрация прошла успешно!";
+            }, (error) => console.log(error))
           }
+
         },
 
         computed: {
