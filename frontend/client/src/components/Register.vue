@@ -2,9 +2,10 @@
     <div>
     <!-- Register form -->
     <div v-if="is_register">
-      <div v-if="!form_is_valid" class="alert alert-danger" style="position: absolute; z-index: 10; top: 10%; left: 41%" role="alert">Ошибка валидации формы регистрации!</div>
+      <div v-if="message !== ''" class="alert alert-info" role="alert">{{ message }}</div>
+      <div v-if="!form_is_valid" class="alert alert-danger" role="alert">Ошибка валидации формы регистрации!</div>
         <div class="d-flex justify-content-center">
-          <div class="card" style="width: 18rem">
+          <div class="card" style="width: 25rem; margin-top: 5%">
             <div class="card-body">
               <h5 class="card-title">Регистрация</h5>
               <h6 class="card-subtitle mb-2 text-muted">Введите e-mail и пароль для регистрации</h6>
@@ -40,7 +41,7 @@
     <div v-else>
       <div v-if="!form_is_valid" class="alert alert-danger" style="position: absolute; z-index: 10; top: 10%; left: 41%" role="alert">Ошибка валидации формы регистрации!</div>
         <div class="d-flex justify-content-center">
-          <div class="card" style="width: 18rem">
+          <div class="card" style="width: 25rem; margin-top: 5%">
             <div class="card-body">
               <h5 class="card-title">Войти</h5>
               <h6 class="card-subtitle mb-2 text-muted">Введите e-mail и пароль для того чтобы войти в учетную запись</h6>
@@ -74,7 +75,7 @@
         name: "Register",
         data() {
           return {
-            msg: "***",
+            message: '',
             original_password: '',
             confirmed_password: '',
             email_address: '',
@@ -105,17 +106,17 @@
 
           /* send post-request to endpoint */
           registration() {
-            const endpoint = "http://127.0.0.1:8000/api/register";
+            const endpoint = "http://127.0.0.1:8000/api/register/";
             axios({
               method: 'post',
               url: endpoint,
-              headers: {'Content-Type': 'multipart/form-data' },
-              data: {
-                email: this.register_email,
-                password: this.register_password
-              }
+              headers: { 'Content-Type': 'application/json' },
+              data: JSON.stringify({
+                "email" : this.email_address,
+                "password" : this.original_password
+              })
             }).then((response) => {
-              if (response.data.user_exists) this.message = "Пользователь уже существует!";
+              if (response.data.is_user_exists) this.message = "Пользователь уже существует!";
               else this.message = "Регистрация прошла успешно!";
             }, (error) => console.log(error))
           }
