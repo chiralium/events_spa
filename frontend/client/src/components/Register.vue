@@ -110,7 +110,10 @@
               })
             }).then((response) => {
               if (response.data.is_user_exists) this.$emit('form_submit', {text : 'Пользователь с таким E-mail уже существует!', type : 'error'})
-              else this.$emit('form_submit', {text : 'Регистрация прошла успешно!', type : 'success'})
+              else {
+                this.$emit('form_submit', {text : 'Регистрация прошла успешно!', type : 'success'});
+                this.change_form()
+              }
             }, (error) => console.log(error))
           }
 

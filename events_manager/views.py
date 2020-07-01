@@ -14,4 +14,12 @@ def registration_handler(request):
         if User.objects.filter(email=request.data.get('email')).exists():
             return Response({"is_user_exists" : 1})
         else:
+            email = request.data.get('email', None)
+            password = request.data.get('password', None)
+
+            if not (email and password): return Response({'message' : 'required fields is not specified!'})
+
+            username = email.split('@')[0]
+            User.objects.create_user(email=email, username=username, password=password)
+
             return Response({"is_user_exists" : 0})
