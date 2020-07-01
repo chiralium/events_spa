@@ -56,7 +56,7 @@
                     <label for="password_field">Пароль</label>
                     <input v-model="original_password" type="password" class="form-control" id="password_field">
                   </div>
-                  <button v-on:click="form_submit()" type="submit" class="btn btn-primary">Войти</button>
+                  <button v-on:click="login_form_submit()" type="submit" class="btn btn-primary">Войти</button>
               </p>
               <h6 class="card-subtitle mb-3 text-muted" v-on:click="change_form()"><a href="#" >Нет аккаунта?</a></h6>
             </div>
@@ -83,7 +83,16 @@
         },
 
         methods: {
-          /* check the form fields */
+          /* check the login form fields */
+          login_form_submit() {
+            if ( (this.form_is_valid = this.email_is_valid && this.original_password !== '') ) this.login();
+            else {
+              this.$emit('form_submit',
+                          {text : 'Ошибка валидации формы ввода!', type : 'error'})
+            }
+          },
+
+          /* check the register form fields */
           form_submit() {
             if ( (this.form_is_valid = this.is_compared && this.email_is_valid) ) this.registration();
             else {
@@ -95,6 +104,26 @@
           /* change the form */
           change_form() {
             this.is_register = !this.is_register;
+          },
+
+          /* send post-request to login endpoint */
+          login() {
+            const endpoint = "http://127.0.0.1:8000/api/login/";
+            axios({
+              method : 'post',
+              url : endpoint,
+              headers : { 'Content-Type': 'application/json' },
+              data: JSON.stringify({
+                "email" : this.email_address,
+                "password" : this.original_password
+              })
+            }).then((response) => {
+              if (response.data.logged_in) {
+                this.$emit('form_submit', {text : 'Вы авторизованы!', type : 'success'})
+                this.$emit('logged_in',   {data : 'logged in'});
+              }
+              else this.$emit('form_submit', {text : 'Ошибка авторизации', type : 'error'})
+            }, (error) => console.log(error))
           },
 
           /* send post-request to endpoint */

@@ -11,15 +11,31 @@ def registration_handler(request):
     """Registration requests handler"""
     if request.method == 'GET': return Response({"message" : "Undefined request method"});
     elif request.method == 'POST':
-        if User.objects.filter(email=request.data.get('email')).exists():
-            return Response({"is_user_exists" : 1})
+        if not __is_fields_valid__([request.data.get('email', None),
+                                    request.data.get('password', None)]): return Response({'message' : 'required fields is not specified'})
+
+        if User.objects.filter(email=request.data.get('email')).exists(): return Response({"is_user_exists" : 1})
         else:
             email = request.data.get('email', None)
             password = request.data.get('password', None)
 
-            if not (email and password): return Response({'message' : 'required fields is not specified!'})
-
             username = email.split('@')[0]
             User.objects.create_user(email=email, username=username, password=password)
-
             return Response({"is_user_exists" : 0})
+
+@api_view(['GET', 'POST'])
+def login_handler(request):
+    """Login requests handler"""
+    if request.method == 'GET': return Response({"message" : "Undefined requests method"})
+    elif request.method == 'POST':
+        if not __is_fields_valid__([request.data.get('email', None),
+                                    request.data.get('password', None)]): return Response({'message' : 'required fields is not specified'})
+
+        return Response({"logged_in" : 1})
+
+
+def __is_fields_valid__(fieldset):
+    """Check the field by None"""
+    for field in fieldset:
+        if field is None: return False
+    return True
