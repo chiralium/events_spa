@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 
 class Home(APIView):
     def get(self, request): return Response({"error": "Endpoint is not specified!"})
@@ -31,7 +32,17 @@ def login_handler(request):
         if not __is_fields_valid__([request.data.get('email', None),
                                     request.data.get('password', None)]): return Response({'message' : 'required fields is not specified'})
 
-        return Response({"logged_in" : 1})
+        username = request.data.get('email').split('@')[0]
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return Response({'logged_in' : 1})
+        else: return Response({'logged_in' : 0})
+
+@api_view(['GET'])
+def is_logged_in(request): return Response({"is_authenticated" : request.user.is_authenticated})
 
 
 def __is_fields_valid__(fieldset):

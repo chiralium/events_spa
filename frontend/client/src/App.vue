@@ -7,7 +7,6 @@
     <div v-if="!is_logged_in">
       <register @form_submit="register_on_submit" @logged_in="login_on_submit"></register>
     </div>
-
     <div v-else>
       <interface></interface>
     </div>
@@ -19,6 +18,7 @@
 import Register from './components/Register.vue';
 import Message from './components/Message';
 import Interface from "./components/Interface";
+import axios from 'axios';
 
 export default {
   data() {
@@ -32,8 +32,20 @@ export default {
       this.pop_up_message = data;
     },
 
-    login_on_submit(data) {
-      this.is_logged_in = true;
+    login_on_submit() {
+      this.is_authenticated();
+    },
+
+    is_authenticated() {
+      const endpoint = 'http://127.0.0.1:8000/api/login/is_auth/';
+      axios({
+        url : endpoint,
+        method : 'get',
+        headers : { 'Content-Type': 'application/json' },
+        withCredentials: true
+      }).then((response) => {
+          this.is_logged_in = response.data.is_authenticated;
+      }, (error) => console.log('Authentication error', error))
     }
   },
   name: 'App',
@@ -41,6 +53,9 @@ export default {
     'register': Register,
     'message' : Message,
     'interface' : Interface
+  },
+  mounted() {
+    this.is_authenticated()
   }
 };
 </script>
