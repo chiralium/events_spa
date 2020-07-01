@@ -2,8 +2,6 @@
     <div>
     <!-- Register form -->
     <div v-if="is_register">
-      <div v-if="message !== ''" class="alert alert-info" role="alert">{{ message }}</div>
-      <div v-if="!form_is_valid" class="alert alert-danger" role="alert">Ошибка валидации формы регистрации!</div>
         <div class="d-flex justify-content-center">
           <div class="card" style="width: 25rem; margin-top: 5%">
             <div class="card-body">
@@ -75,28 +73,23 @@
         name: "Register",
         data() {
           return {
-            message: '',
             original_password: '',
             confirmed_password: '',
             email_address: '',
+
             form_is_valid: true,
             is_register: true
           }
         },
 
         methods: {
-          /* getting the main message */
-          getMessage() {
-            const path = "http://127.0.0.1:8000/api/register";
-            axios.get(path).then((res) => {
-              if (res.data.error) this.msg = "Something gonna wrong";
-              else this.msg = res.data.message;
-            })
-          },
-
           /* check the form fields */
           form_submit() {
             if ( (this.form_is_valid = this.is_compared && this.email_is_valid) ) this.registration();
+            else {
+              this.$emit('form_submit',
+                          {text : 'Ошибка валидации формы ввода!', type : 'error'})
+            }
           },
 
           /* change the form */
@@ -116,8 +109,8 @@
                 "password" : this.original_password
               })
             }).then((response) => {
-              if (response.data.is_user_exists) this.message = "Пользователь уже существует!";
-              else this.message = "Регистрация прошла успешно!";
+              if (response.data.is_user_exists) this.$emit('form_submit', {text : 'Пользователь с таким E-mail уже существует!', type : 'error'})
+              else this.$emit('form_submit', {text : 'Регистрация прошла успешно!', type : 'success'})
             }, (error) => console.log(error))
           }
 
@@ -135,10 +128,6 @@
             var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             return re.test(this.email_address);
           }
-        },
-
-        created() {
-          this.getMessage()
         }
     }
 </script>
