@@ -4,6 +4,9 @@ from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
+from .serializers import EventSerializer
+from .models import Event
+
 class Home(APIView):
     def get(self, request): return Response({"error": "Endpoint is not specified!"})
 
@@ -54,6 +57,13 @@ def get_user_credentials(request):
 def logout_handler(request):
     logout(request)
     return Response({"message" : "ok"})
+
+@api_view(['GET'])
+def get_all_events(request):
+    if request.user.is_authenticated:
+        event = Event.objects.get(pk=2)
+        serialized_events = EventSerializer(event)
+        return Response(serialized_events.data)
 
 def __is_fields_valid__(fieldset):
     """Check the field by None"""
