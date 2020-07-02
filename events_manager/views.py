@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 class Home(APIView):
     def get(self, request): return Response({"error": "Endpoint is not specified!"})
@@ -44,6 +44,16 @@ def login_handler(request):
 @api_view(['GET'])
 def is_logged_in(request): return Response({"is_authenticated" : request.user.is_authenticated})
 
+@api_view(['GET'])
+def get_user_credentials(request):
+    if request.user.is_authenticated: return Response({"username" : request.user.username})
+    return Response({"username" : False})
+
+
+@api_view(['GET'])
+def logout_handler(request):
+    logout(request)
+    return Response({"message" : "ok"})
 
 def __is_fields_valid__(fieldset):
     """Check the field by None"""

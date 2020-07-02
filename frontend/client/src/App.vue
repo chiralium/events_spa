@@ -8,7 +8,7 @@
       <register @form_submit="register_on_submit" @logged_in="login_on_submit"></register>
     </div>
     <div v-else>
-      <interface></interface>
+      <interface @logged_out="logout_on_submit"></interface>
     </div>
   </div>
 </template>
@@ -34,6 +34,10 @@ export default {
 
     login_on_submit() {
       this.is_authenticated();
+    },
+
+    logout_on_submit() {
+      this.is_logged_in = false
     },
 
     is_authenticated() {
