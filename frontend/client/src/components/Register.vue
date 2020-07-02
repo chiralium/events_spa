@@ -113,6 +113,7 @@
               method : 'post',
               url : endpoint,
               headers : { 'Content-Type': 'application/json' },
+              withCredentials: true,
               data: JSON.stringify({
                 "email" : this.email_address,
                 "password" : this.original_password

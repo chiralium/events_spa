@@ -41,7 +41,6 @@ export default {
       axios({
         url : endpoint,
         method : 'get',
-        headers : { 'Content-Type': 'application/json' },
         withCredentials: true
       }).then((response) => {
           this.is_logged_in = response.data.is_authenticated;
