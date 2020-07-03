@@ -22,7 +22,10 @@
           </thead>
           <tbody>
             <tr v-for="(event, index) in events" :key = "event">
-              <th scope="row">{{ index + 1 }}</th>
+              <th scope="row">
+                {{ index + 1 }}
+                <span v-if="event.__added__" class="badge badge-pill badge-danger">new</span>
+              </th>
               <td><input class="input-form" type="date" v-bind:value="event.event_date" /></td>
               <td><input class="input-form" type="text" v-bind:value="event.event_type" /> </td>
               <td><textarea class="input-form" type="text" v-bind:value="event.event_description" /></td>
@@ -50,7 +53,7 @@
         },
         methods: {
           add_new_event() {
-            this.events.push({id : "", event_date : "", event_type : "", event_description : ""})
+            this.events.push({id : "", event_date : "", event_type : "", event_description : "", __added__ : 1})
           },
           get_user_events() {
             const endpoint = "http://127.0.0.1:8000/api/events/all";
@@ -59,11 +62,8 @@
               method : 'get',
               withCredentials : true
             }).then((response) => {
-              if (response.data.error) {
-                console.log(response.data.error);
-                this.events = [];
-              }
-              this.events = response.data.events;
+              if (response.data.error) console.log(response.data.error);
+              else this.events = response.data.events;
             })
           },
           get_username() {
