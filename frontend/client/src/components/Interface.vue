@@ -21,7 +21,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(event, index) in events" :key = "event">
+            <tr v-for="(event, index) in events">
               <th scope="row">
                 {{ index + 1 }}
                 <span v-if="event.__added__" class="badge badge-pill badge-danger">new</span>
