@@ -61,9 +61,10 @@ def logout_handler(request):
 @api_view(['GET'])
 def get_all_events(request):
     if request.user.is_authenticated:
-        event = Event.objects.get(pk=2)
-        serialized_events = EventSerializer(event)
-        return Response(serialized_events.data)
+        events = Event.objects.filter(event_author=request.user.id)
+        serialized_events = EventSerializer(events, many=True)
+        return Response({"events" : serialized_events.data})
+    return Response({"error" : "User is not authenticated"})
 
 def __is_fields_valid__(fieldset):
     """Check the field by None"""

@@ -10,24 +10,31 @@
           </div>
         </div>
       </header>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">№</th>
-            <th scope="col">Дата</th>
-            <th scope="col">Тип</th>
-            <th scope="col">Описание</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="event in events" :key = "event">
-            <th scope="row">{{ event.id }}</th>
-            <td>{{ event.date }}</td>
-            <td>{{ event.type }}</td>
-            <td>{{ event.description }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">№</th>
+              <th scope="col">Дата</th>
+              <th scope="col">Тип</th>
+              <th scope="col">Описание</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(event, index) in events" :key = "event">
+              <th scope="row">{{ index + 1 }}</th>
+              <td><input class="input-form" type="date" v-bind:value="event.event_date" /></td>
+              <td><input class="input-form" type="text" v-bind:value="event.event_type" /> </td>
+              <td><textarea class="input-form" type="text" v-bind:value="event.event_description" /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="container-fluid">
+        <div class="row row justify-content-md-center">
+          <div class="col-md-auto"><button type="button" class="btn btn-success" v-on:click="add_new_event">+</button></div>
+        </div>
+      </div>
     </div>
 </template>
 
@@ -38,25 +45,27 @@
         data() {
           return {
             username : "",
-            events : [
-              {id : 1, date : '12.01.1997', type : 'Звонок', description : 'Позвонить в 911'},
-              {id : 2, date : '12.01.1997', type : 'Встреча', description : 'Позвонить в 102'},
-              {id : 3, date : '12.01.1997', type : 'Звонок', description : 'Позвонить в 103'},
-              {id : 4, date : '12.01.1997', type : 'Встреча', description : 'Позвонить в 112'},
-              {id : 5, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 6, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 7, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 8, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 9, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 10, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 11, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 12, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 13, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'},
-              {id : 14, date : '12.01.1997', type : 'Конференция', description : 'Позвонить в 104'}
-            ]
+            events : []
           };
         },
         methods: {
+          add_new_event() {
+            this.events.push({id : "", event_date : "", event_type : "", event_description : ""})
+          },
+          get_user_events() {
+            const endpoint = "http://127.0.0.1:8000/api/events/all";
+            axios({
+              url : endpoint,
+              method : 'get',
+              withCredentials : true
+            }).then((response) => {
+              if (response.data.error) {
+                console.log(response.data.error);
+                this.events = [];
+              }
+              this.events = response.data.events;
+            })
+          },
           get_username() {
             const endpoint = "http://127.0.0.1:8000/api/login/credentials";
               axios({
@@ -84,7 +93,8 @@
           }
       },
       mounted() {
-          this.get_username()
+          this.get_username();
+          this.get_user_events()
       }
     }
 </script>
@@ -104,5 +114,26 @@
 
   #signout:hover {
     color: red;
+  }
+
+  .table tbody th, tr {
+    text-align: center;
+  }
+
+  .table tbody th:hover, tr:hover {
+    background: #a7e8a7;
+    cursor: pointer;
+  }
+
+  .input-form {
+    text-align: center;
+    width: 160px;
+    border-radius: 5px;
+  }
+
+  .table-container {
+    max-height: 800px;
+    min-height: 300px;
+    overflow: auto;
   }
 </style>
