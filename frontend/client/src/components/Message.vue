@@ -13,7 +13,10 @@
         props: ['text', 'type'],
         name: "Message.vue",
         mounted() {
-          setTimeout( () => {fade_out_message.style.display = 'none'}, 2000)
+          setTimeout( () => {
+            fade_out_message.style.display = 'none'
+            this.$emit('is_done_message', {})
+          }, 2000);
         }
     }
 </script>

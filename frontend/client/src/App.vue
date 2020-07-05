@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <span v-if="pop_up_message">
-      <message v-bind:text="pop_up_message.text" v-bind:type="pop_up_message.type"></message>
+      <message @is_done_message="message_is_done" v-bind:text="pop_up_message.text" v-bind:type="pop_up_message.type"></message>
     </span>
 
     <div v-if="!is_logged_in">
@@ -28,6 +28,9 @@ export default {
     }
   },
   methods: {
+    message_is_done() {
+      this.pop_up_message = null
+    },
     register_on_submit(data) {
       this.pop_up_message = data;
     },

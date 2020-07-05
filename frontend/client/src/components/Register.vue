@@ -37,7 +37,6 @@
 
     <!-- Login form -->
     <div v-else>
-      <div v-if="!form_is_valid" class="alert alert-danger" style="position: absolute; z-index: 10; top: 10%; left: 41%" role="alert">Ошибка валидации формы регистрации!</div>
         <div class="d-flex justify-content-center">
           <div class="card" style="width: 25rem; margin-top: 5%">
             <div class="card-body">
