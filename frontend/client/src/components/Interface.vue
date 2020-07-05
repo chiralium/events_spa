@@ -10,8 +10,35 @@
           </div>
         </div>
       </header>
+
+      <div v-if="show_add_row_window" id="add_new_row_window" class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">Новое событие</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Заполните следующие поля:</h6>
+          <table>
+            <tr>
+              <td>Дата:</td>
+              <td><input type="date" v-model="form_event_date" /></td>
+            </tr>
+            <tr>
+              <td>Тип:</td>
+              <td><input type="text" v-model="form_event_type" /></td>
+            </tr>
+            <tr>
+              <td>Описание:</td>
+              <td><input type="text" v-model="form_event_description" /></td>
+            </tr>
+            <tr><td><br></td></tr>
+            <tr style="margin-top: 25px">
+              <td><button type="button" class="btn btn-secondary btn-sm" v-on:click="hide_add_row_window()">Отмена</button></td>
+              <td><button type="button" class="btn btn-success btn-sm" v-bind:disabled="is_valid">Сохранить</button></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
       <div class="table-container">
-        <table class="table table-bordered">
+        <table id="event-table" class="table table-bordered">
           <thead>
             <tr>
               <th scope="col">№</th>
@@ -26,9 +53,9 @@
                 {{ index + 1 }}
                 <span v-if="event.__added__" class="badge badge-pill badge-danger">new</span>
               </th>
-              <td><input class="input-form" type="date" v-bind:value="event.event_date" /></td>
-              <td><input class="input-form" type="text" v-bind:value="event.event_type" /> </td>
-              <td><textarea class="input-form" type="text" v-bind:value="event.event_description" /></td>
+              <td>{{ event.event_date }}</td>
+              <td>{{ event.event_type }}</td>
+              <td>{{ event.event_description }}</td>
             </tr>
           </tbody>
         </table>
@@ -48,12 +75,19 @@
         data() {
           return {
             username : "",
-            events : []
+            events : [],
+            show_add_row_window : false,
+            form_event_date : "",
+            form_event_type : "",
+            form_event_description : ""
           };
         },
         methods: {
+          hide_add_row_window() {
+            this.show_add_row_window = false
+          },
           add_new_event() {
-            this.events.push({id : "", event_date : "", event_type : "", event_description : "", __added__ : 1})
+            this.show_add_row_window = true
           },
           get_user_events() {
             const endpoint = "http://127.0.0.1:8000/api/events/all";
@@ -92,6 +126,11 @@
             })
           }
       },
+      computed: {
+          is_valid: function () {
+            return !(this.form_event_date !== "" && this.form_event_type !== "" && this.form_event_description !== "");
+          }
+      },
       mounted() {
           this.get_username();
           this.get_user_events()
@@ -120,11 +159,6 @@
     text-align: center;
   }
 
-  .table tbody th:hover, tr:hover {
-    background: #a7e8a7;
-    cursor: pointer;
-  }
-
   .input-form {
     text-align: center;
     width: 160px;
@@ -135,5 +169,12 @@
     max-height: 800px;
     min-height: 300px;
     overflow: auto;
+  }
+
+  #add_new_row_window {
+    position: absolute;
+    top: 25%;
+    left: 43%;
+    z-index: 9;
   }
 </style>
