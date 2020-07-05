@@ -77,6 +77,20 @@ def create_new_event(request):
         return Response({"error" : "Data is not valid!"})
     return Response({"error" : "User is not authenticated"})
 
+@api_view(['DELETE'])
+def delete_event(request):
+    if request.user.is_authenticated:
+        event_id = request.data.get('id', None)
+        if event_id is None: return Response({"error" : "Required parameter `id` is not passed!"})
+
+        deleted_event = Event.objects.get(pk=event_id, event_author_id=request.user.id)
+
+        if deleted_event is not None: deleted_event.delete()
+        else: return Response({"error" : "Event is not found!"})
+
+        return Response({"status" : "Deleted!"})
+    return Response({"error" : "User is not authenticated"})
+
 def __is_fields_valid__(fieldset):
     """Check the field by None"""
     for field in fieldset:

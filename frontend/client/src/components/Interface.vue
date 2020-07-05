@@ -5,7 +5,7 @@
           <div class="row">
             <div class="col" style="text-align: left; font-style: italic">{{ username }}</div>
             <div id="signout" class="col" v-on:click="logout()">
-              Sign Out
+              Выход
             </div>
           </div>
         </div>
@@ -49,10 +49,11 @@
           </thead>
           <tbody>
             <tr v-for="(event, index) in events">
-              <th scope="row">
-                {{ index + 1 }}
-                <span v-if="event.__added__" class="badge badge-pill badge-danger">new</span>
-              </th>
+              <td>
+                <sup><span v-on:click="delete_event($event, event.id)" v-bind:event_id="event.id" id="delete-button" class="badge badge-danger">удалить</span></sup>
+                {{index + 1}}
+                <sub><span v-bind:event_id="event.id" id="update-button" class="badge badge-warning">ред.</span></sub>
+              </td>
               <td>{{ event.event_date }}</td>
               <td>{{ event.event_type }}</td>
               <td>{{ event.event_description }}</td>
@@ -91,6 +92,23 @@
             this.show_add_row_window = true
           },
 
+          delete_event(event, id) {
+            const endpoint = "http://127.0.0.1:8000/api/events/delete/";
+            const csrftoken = document.cookie.split('csrftoken=')[1];
+            axios({
+              url : endpoint,
+              method : 'delete',
+              headers : { 'Content-Type' : 'application/json',
+                          'X-CSRFToken'  : csrftoken},
+              data : JSON.stringify({
+                'id' : id
+              }),
+              withCredentials : true
+            }).then((response) => {
+              this.get_user_events();
+            })
+          },
+
           create_new_event() {
             const endpoint = "http://127.0.0.1:8000/api/events/new/";
             const csrftoken = document.cookie.split('csrftoken=')[1];
@@ -106,7 +124,6 @@
                 'event_description' : this.form_event_description
               })
             }).then((response) => {
-              console.log(response.data.error);
               this.get_user_events();
 
               this.form_event_date = '';
@@ -206,5 +223,10 @@
     top: 25%;
     left: 43%;
     z-index: 9;
+  }
+
+  #delete-button:hover, #update-button:hover {
+    cursor: pointer;
+    box-shadow: 5px 2px 5px rgba(0, 0, 0, 0.5);
   }
 </style>
