@@ -69,7 +69,12 @@ def get_all_events(request):
 @api_view(['POST'])
 def create_new_event(request):
     if request.user.is_authenticated:
-        return Response({"resp" : str(request.data)})
+        request.data.update({'event_author' : request.user.id})
+        new_event_data_serializer = EventSerializer(data=request.data)
+        if new_event_data_serializer.is_valid():
+            new_event_data_serializer.save()
+            return Response({"status" : "ok"})
+        return Response({"error" : "Data is not valid!"})
     return Response({"error" : "User is not authenticated"})
 
 def __is_fields_valid__(fieldset):

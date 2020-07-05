@@ -106,8 +106,14 @@
                 'event_description' : this.form_event_description
               })
             }).then((response) => {
-              console.log(response.data)
+              console.log(response.data.error);
+              this.get_user_events();
+
+              this.form_event_date = '';
+              this.form_event_type = '';
+              this.form_event_description = '';
             })
+            this.show_add_row_window = false;
           },
 
           get_user_events() {
@@ -118,7 +124,10 @@
               withCredentials : true
             }).then((response) => {
               if (response.data.error) console.log(response.data.error);
-              else this.events = response.data.events;
+              else {
+                console.log(response.data.events)
+                this.events = response.data.events;
+              }
             })
           },
           get_username() {
