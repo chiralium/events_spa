@@ -91,6 +91,15 @@ def delete_event(request):
         return Response({"status" : "Deleted!"})
     return Response({"error" : "User is not authenticated"})
 
+@api_view(['PUT'])
+def update_event(request):
+    if request.user.is_authenticated:
+        event_id = request.data.get('event_id', None)
+        if event_id is None: return Response({"error" : "Required parameter `id` is not passed!"})
+        updated_event_serializer = EventSerializer(data=request.data)
+        return Response({"data" : dir(updated_event_serializer)})
+    return Response({"error" : "User is not authenticated"})
+
 def __is_fields_valid__(fieldset):
     """Check the field by None"""
     for field in fieldset:

@@ -11,9 +11,9 @@
         </div>
       </header>
 
-      <div v-if="show_add_row_window" id="add_new_row_window" class="card" style="width: 18rem;">
+      <div v-if="show_add_row_window" id="add_new_row_window" class="card" style="width: 23rem;">
         <div class="card-body">
-          <h5 class="card-title">Новое событие</h5>
+          <h5 class="card-title">{{ form_header }}</h5>
           <h6 class="card-subtitle mb-2 text-muted">Заполните следующие поля:</h6>
           <table>
             <tr>
@@ -31,7 +31,7 @@
             <tr><td><br></td></tr>
             <tr style="margin-top: 25px">
               <td><button type="button" class="btn btn-secondary btn-sm" v-on:click="hide_add_row_window()">Отмена</button></td>
-              <td><button type="button" class="btn btn-success btn-sm" v-bind:disabled="is_valid" v-on:click="create_new_event">Сохранить</button></td>
+              <td><button type="button" class="btn btn-success btn-sm" v-bind:disabled="is_valid" v-on:click="form_submit($event, form_handler_function)">Сохранить</button></td>
             </tr>
           </table>
         </div>
@@ -52,7 +52,7 @@
               <td>
                 <sup><span v-on:click="delete_event($event, event.id)" id="delete-button" class="badge badge-danger">удалить</span></sup>
                 {{index + 1}}
-                <sub><span v-on:click="update_event($event, event.id)"  id="update-button" class="badge badge-warning">ред.</span></sub>
+                <sub><span v-on:click="update_event($event, event)"  id="update-button" class="badge badge-warning">ред.</span></sub>
               </td>
               <td>{{ event.event_date }}</td>
               <td>{{ event.event_type }}</td>
@@ -81,19 +81,74 @@
 
             form_event_date : "",
             form_event_type : "",
-            form_event_description : ""
+            form_event_description : "",
+            form_header : "",
+            form_handler_function : null,
+
+            update_event_id : null,
           };
         },
         methods: {
+          form_submit(event, form_handler_function) {
+            form_handler_function()
+          },
+
           hide_add_row_window() {
             this.show_add_row_window = false
           },
           add_new_event() {
-            this.show_add_row_window = true
+            this.form_header = "Новое событие";
+            this.form_handler_function = this.create_new_event;
+            this.show_add_row_window = true;
+
+            /* Resetting the input fields */
+            this.form_event_date = "";
+            this.form_event_type = "";
+            this.form_event_description = "";
           },
 
-          update_event(event, id) {
-            console.log(id)
+          update_event(event, event_data) {
+            this.form_header = 'Редактировать событие `' + event_data.event_type + '`';
+            this.form_handler_function = this.update_existed_event;
+            this.update_event_id = event_data.id;
+
+            /* Filling the inputs by existed data */
+            this.form_event_date = event_data.event_date;
+            this.form_event_type = event_data.event_type;
+            this.form_event_description = event_data.event_description;
+
+            this.show_add_row_window = true;
+          },
+
+          update_existed_event() {
+            const endpoint = "http://127.0.0.1:8000/api/events/update/";
+            const csrftoken = document.cookie.split('csrftoken=')[1];
+            if (csrftoken === "") {
+              console.log("CSRF-token is empty");
+              return 0;
+            }
+
+            axios({
+              url : endpoint,
+              method : 'put',
+              headers : { 'Content-Type' : 'application/json',
+                          'X-CSRFToken'  : csrftoken },
+              withCredentials : true,
+              data : JSON.stringify({
+                'event_id' : this.update_event_id,
+                'event_type' : this.form_event_type,
+                'event_date' : this.form_event_date,
+                'event_description' : this.form_event_description
+              }),
+            }).then((response) => {
+              if (response.data.error) {
+                console.log(response.data.error);
+                return;
+              }
+              this.get_user_events();
+            }, (error) => {
+              console.log(error);
+            })
           },
 
           delete_event(event, id) {
@@ -113,7 +168,13 @@
               }),
               withCredentials : true
             }).then((response) => {
+              if (response.data.error) {
+                console.log(response.data.error);
+                return;
+              }
               this.get_user_events();
+            }, (error) => {
+              console.log(error)
             })
           },
 

@@ -10,5 +10,6 @@ urlpatterns = [
     path('logout/', logout_handler),
     path('events/all', get_all_events),
     path('events/new/', create_new_event),
-    path('events/delete/', delete_event)
+    path('events/delete/', delete_event),
+    path('events/update/', update_event)
 ]
