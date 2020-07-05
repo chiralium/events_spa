@@ -50,9 +50,9 @@
           <tbody>
             <tr v-for="(event, index) in events">
               <td>
-                <sup><span v-on:click="delete_event($event, event.id)" v-bind:event_id="event.id" id="delete-button" class="badge badge-danger">удалить</span></sup>
+                <sup><span v-on:click="delete_event($event, event.id)" id="delete-button" class="badge badge-danger">удалить</span></sup>
                 {{index + 1}}
-                <sub><span v-bind:event_id="event.id" id="update-button" class="badge badge-warning">ред.</span></sub>
+                <sub><span v-on:click="update_event($event, event.id)"  id="update-button" class="badge badge-warning">ред.</span></sub>
               </td>
               <td>{{ event.event_date }}</td>
               <td>{{ event.event_type }}</td>
@@ -92,14 +92,22 @@
             this.show_add_row_window = true
           },
 
+          update_event(event, id) {
+            console.log(id)
+          },
+
           delete_event(event, id) {
             const endpoint = "http://127.0.0.1:8000/api/events/delete/";
             const csrftoken = document.cookie.split('csrftoken=')[1];
+            if (csrftoken === "") {
+              console.log("CSRF-token is empty");
+              return 0;
+            }
             axios({
               url : endpoint,
               method : 'delete',
               headers : { 'Content-Type' : 'application/json',
-                          'X-CSRFToken'  : csrftoken},
+                          'X-CSRFToken'  : csrftoken },
               data : JSON.stringify({
                 'id' : id
               }),
@@ -112,12 +120,16 @@
           create_new_event() {
             const endpoint = "http://127.0.0.1:8000/api/events/new/";
             const csrftoken = document.cookie.split('csrftoken=')[1];
+            if (csrftoken === "") {
+              console.log("CSRF-token is empty");
+              return 0;
+            }
             axios({
               url : endpoint,
               method : 'post',
               withCredentials : true,
               headers : { 'Content-Type' : 'application/json',
-                          'X-CSRFToken'  : csrftoken},
+                          'X-CSRFToken'  : csrftoken },
               data : JSON.stringify({
                 'event_date' : this.form_event_date,
                 'event_type' : this.form_event_type,
