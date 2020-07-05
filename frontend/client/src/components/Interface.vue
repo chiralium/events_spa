@@ -31,7 +31,7 @@
             <tr><td><br></td></tr>
             <tr style="margin-top: 25px">
               <td><button type="button" class="btn btn-secondary btn-sm" v-on:click="hide_add_row_window()">Отмена</button></td>
-              <td><button type="button" class="btn btn-success btn-sm" v-bind:disabled="is_valid">Сохранить</button></td>
+              <td><button type="button" class="btn btn-success btn-sm" v-bind:disabled="is_valid" v-on:click="create_new_event">Сохранить</button></td>
             </tr>
           </table>
         </div>
@@ -77,6 +77,7 @@
             username : "",
             events : [],
             show_add_row_window : false,
+
             form_event_date : "",
             form_event_type : "",
             form_event_description : ""
@@ -89,6 +90,26 @@
           add_new_event() {
             this.show_add_row_window = true
           },
+
+          create_new_event() {
+            const endpoint = "http://127.0.0.1:8000/api/events/new/";
+            const csrftoken = document.cookie.split('csrftoken=')[1];
+            axios({
+              url : endpoint,
+              method : 'post',
+              withCredentials : true,
+              headers : { 'Content-Type' : 'application/json',
+                          'X-CSRFToken'  : csrftoken},
+              data : JSON.stringify({
+                'event_date' : this.form_event_date,
+                'event_type' : this.form_event_type,
+                'event_description' : this.form_event_description
+              })
+            }).then((response) => {
+              console.log(response.data)
+            })
+          },
+
           get_user_events() {
             const endpoint = "http://127.0.0.1:8000/api/events/all";
             axios({

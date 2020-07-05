@@ -66,6 +66,12 @@ def get_all_events(request):
         return Response({"events" : serialized_events.data})
     return Response({"error" : "User is not authenticated"})
 
+@api_view(['POST'])
+def create_new_event(request):
+    if request.user.is_authenticated:
+        return Response({"resp" : str(request.data)})
+    return Response({"error" : "User is not authenticated"})
+
 def __is_fields_valid__(fieldset):
     """Check the field by None"""
     for field in fieldset:

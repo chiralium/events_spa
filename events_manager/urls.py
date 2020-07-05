@@ -8,5 +8,6 @@ urlpatterns = [
     path('login/is_auth/', is_logged_in),
     path('login/credentials/', get_user_credentials),
     path('logout/', logout_handler),
-    path('events/all', get_all_events)
+    path('events/all', get_all_events),
+    path('events/new/', create_new_event)
 ]
