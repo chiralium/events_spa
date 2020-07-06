@@ -94,10 +94,17 @@ def delete_event(request):
 @api_view(['PUT'])
 def update_event(request):
     if request.user.is_authenticated:
-        event_id = request.data.get('event_id', None)
+        event_author = request.user.id
+        request.data.update({"event_author": event_author})
+
+        event_id = request.data.get('id', None)
         if event_id is None: return Response({"error" : "Required parameter `id` is not passed!"})
-        updated_event_serializer = EventSerializer(data=request.data)
-        return Response({"data" : dir(updated_event_serializer)})
+
+        updated_event = Event.objects.get(pk=event_id)
+        updated_event_serializer = EventSerializer(updated_event, data=request.data)
+
+        if updated_event_serializer.is_valid(): updated_event_serializer.save()
+        return Response({"status" : "ok"})
     return Response({"error" : "User is not authenticated"})
 
 def __is_fields_valid__(fieldset):

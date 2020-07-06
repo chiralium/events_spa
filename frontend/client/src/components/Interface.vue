@@ -135,7 +135,7 @@
                           'X-CSRFToken'  : csrftoken },
               withCredentials : true,
               data : JSON.stringify({
-                'event_id' : this.update_event_id,
+                'id' : this.update_event_id,
                 'event_type' : this.form_event_type,
                 'event_date' : this.form_event_date,
                 'event_description' : this.form_event_description
@@ -149,6 +149,7 @@
             }, (error) => {
               console.log(error);
             })
+            this.show_add_row_window = false;
           },
 
           delete_event(event, id) {

@@ -11,3 +11,11 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('id', 'event_date', 'event_type', 'event_description', 'event_author')
+
+    def update(self, instance, validated_data):
+        instance.event_type = validated_data.get('event_type', instance.event_type)
+        instance.event_date = validated_data.get('event_date', instance.event_date)
+        instance.event_description = validated_data.get('event_description', instance.event_description)
+
+        instance.save()
+        return instance
