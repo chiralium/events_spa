@@ -21,6 +21,10 @@
               <td><input type="date" v-model="form_event_date" /></td>
             </tr>
             <tr>
+              <td>Время:</td>
+              <td><input type="time" v-model="form_event_time" /></td>
+            </tr>
+            <tr>
               <td>Тип:</td>
               <td><input type="text" v-model="form_event_type" /></td>
             </tr>
@@ -42,7 +46,7 @@
           <thead>
             <tr>
               <th scope="col">№</th>
-              <th scope="col">Дата</th>
+              <th scope="col">Дата, время</th>
               <th scope="col">Тип</th>
               <th scope="col">Описание</th>
             </tr>
@@ -54,7 +58,7 @@
                 {{index + 1}}
                 <sub><span v-on:click="update_event($event, event)"  id="update-button" class="badge badge-warning">ред.</span></sub>
               </td>
-              <td>{{ event.event_date }}</td>
+              <td>{{ event.event_date }}, {{ event.event_time }}</td>
               <td>{{ event.event_type }}</td>
               <td>{{ event.event_description }}</td>
             </tr>
@@ -80,6 +84,7 @@
             show_add_row_window : false,
 
             form_event_date : "",
+            form_event_time : "",
             form_event_type : "",
             form_event_description : "",
             form_header : "",
@@ -103,6 +108,7 @@
 
             /* Resetting the input fields */
             this.form_event_date = "";
+            this.form_event_time = "";
             this.form_event_type = "";
             this.form_event_description = "";
           },
@@ -114,6 +120,7 @@
 
             /* Filling the inputs by existed data */
             this.form_event_date = event_data.event_date;
+            this.form_event_time = event_data.event_time;
             this.form_event_type = event_data.event_type;
             this.form_event_description = event_data.event_description;
 
@@ -138,6 +145,7 @@
                 'id' : this.update_event_id,
                 'event_type' : this.form_event_type,
                 'event_date' : this.form_event_date,
+                'event_time' : this.form_event_time,
                 'event_description' : this.form_event_description
               }),
             }).then((response) => {
@@ -194,6 +202,7 @@
                           'X-CSRFToken'  : csrftoken },
               data : JSON.stringify({
                 'event_date' : this.form_event_date,
+                'event_time' : this.form_event_time,
                 'event_type' : this.form_event_type,
                 'event_description' : this.form_event_description
               })
@@ -201,6 +210,7 @@
               this.get_user_events();
 
               this.form_event_date = '';
+              this.form_event_time = '';
               this.form_event_type = '';
               this.form_event_description = '';
             })
@@ -249,7 +259,7 @@
       },
       computed: {
           is_valid: function () {
-            return !(this.form_event_date !== "" && this.form_event_type !== "" && this.form_event_description !== "");
+            return !(this.form_event_time !== '' && this.form_event_date !== "" && this.form_event_type !== "" && this.form_event_description !== "");
           }
       },
       mounted() {
