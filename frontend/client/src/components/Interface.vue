@@ -46,19 +46,21 @@
           <thead>
             <tr>
               <th scope="col">№</th>
-              <th scope="col">Дата, время</th>
-              <th scope="col">Тип</th>
-              <th scope="col">Описание</th>
+              <th scope="col" v-on:click="sorting_parameter = 'date'; sorting_order = !sorting_order">Дата</th>
+              <th scope="col" v-on:click="sorting_parameter = 'time'; sorting_order = !sorting_order">Время</th>
+              <th scope="col" v-on:click="sorting_parameter = 'type'; sorting_order = !sorting_order">Тип</th>
+              <th scope="col" v-on:click="sorting_parameter = 'description'; sorting_order = !sorting_order">Описание</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(event, index) in events">
+            <tr v-for="(event, index) in sorted_list">
               <td>
                 <sup><span v-on:click="delete_event($event, event.id)" id="delete-button" class="badge badge-danger">удалить</span></sup>
                 {{index + 1}}
                 <sub><span v-on:click="update_event($event, event)"  id="update-button" class="badge badge-warning">ред.</span></sub>
               </td>
-              <td>{{ event.event_date }}, {{ event.event_time }}</td>
+              <td>{{ event.event_date }}</td>
+              <td>{{ event.event_time }}</td>
               <td>{{ event.event_type }}</td>
               <td>{{ event.event_description }}</td>
             </tr>
@@ -81,6 +83,9 @@
           return {
             username : "",
             events : [],
+
+            sorting_parameter : "",
+            sorting_order : false, // false -- desc, true -- asc
             show_add_row_window : false,
 
             form_event_date : "",
@@ -260,12 +265,44 @@
       computed: {
           is_valid: function () {
             return !(this.form_event_time !== '' && this.form_event_date !== "" && this.form_event_type !== "" && this.form_event_description !== "");
+          },
+          sorted_list() {
+            // making local sorting_order field global
+            window.order = this.sorting_order;
+            switch(this.sorting_parameter) {
+              case 'date': return this.events.sort(sorting_by_date);
+              case 'time': return this.events.sort(sorting_by_time);
+              case 'type': return this.events.sort(sorting_by_type);
+              case 'description': return this.events.sort(sorting_by_description, this.sorting_order);
+              default: return this.events;
+            }
           }
       },
       mounted() {
           this.get_username();
           this.get_user_events()
       }
+    }
+
+    /* Sorting methods */
+    var sorting_by_date = function(x, y) {
+      if (order) return (x.event_date.toLowerCase() > y.event_date.toLowerCase()) ? 1 : -1;
+      else return (x.event_date.toLowerCase() < y.event_date.toLowerCase()) ? 1 : -1;
+    }
+
+    var sorting_by_time = function(x, y) {
+      if (order) return (x.event_time.toLowerCase() > y.event_time.toLowerCase()) ? 1 : -1;
+      else return (x.event_time.toLowerCase() < y.event_time.toLowerCase()) ? 1 : -1;
+    }
+
+    var sorting_by_type = function(x, y) {
+      if (order) return (x.event_type.toLowerCase() > y.event_type.toLowerCase()) ? 1 : -1;
+      else return (x.event_type.toLowerCase() < y.event_type.toLowerCase()) ? 1 : -1;
+    }
+
+    var sorting_by_description = function(x, y) {
+      if (order) return (x.event_description.toLowerCase() > y.event_description.toLowerCase()) ? 1 : -1;
+      else return (x.event_description.toLowerCase() < y.event_description.toLowerCase()) ? 1 : -1;
     }
 </script>
 
@@ -312,5 +349,9 @@
   #delete-button:hover, #update-button:hover {
     cursor: pointer;
     box-shadow: 5px 2px 5px rgba(0, 0, 0, 0.5);
+  }
+
+  thead th {
+    cursor: pointer;
   }
 </style>
