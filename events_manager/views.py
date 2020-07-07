@@ -26,6 +26,12 @@ def registration_handler(request):
 
             username = email.split('@')[0]
             User.objects.create_user(email=email, username=username, password=password)
+
+            send_mail('Регистрация',
+                      'Регистрация прошла успешно, {username}!'.format(username=username),
+                      'be2e@yandex.ru',
+                      [email], fail_silently=True)
+
             return Response({"is_user_exists" : 0})
 
 @api_view(['GET', 'POST'])

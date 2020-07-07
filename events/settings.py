@@ -54,10 +54,11 @@ MIDDLEWARE = [
 
 # Email configs
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "bsu-mx.bsu.edu.ru"
-EMAIL_PORT = 25
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = "open.bsu.edu.ru"
+EMAIL_HOST = "smtp.yandex.ru"
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = "be2e@yandex.ru"
+EMAIL_HOST_PASSWORD = "********"
 
 ROOT_URLCONF = 'events.urls'
 
